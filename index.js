@@ -12,6 +12,9 @@ function reverseShowLink () {
 
 function showLinkAbout() {
 	var doc = document.getElementById("about");
+	var text = doc.innerHTML;
+	text = text + " ;)"
+	doc.innerHTML = text;
 	doc.style.backgroundColor = "#E8E896"
 	doc.style.color = "#000032";
 }
@@ -19,5 +22,6 @@ function showLinkAbout() {
 function reverseShowLinkAbout () {
 	var doc = document.getElementById("about");
 	doc.style.backgroundColor = "#000032"
+	doc.innerHTML = "About Me";
 	doc.style.color =  "#E8E896";
 }
