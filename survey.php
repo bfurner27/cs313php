@@ -1,16 +1,6 @@
 <?php
 	session_start();
-	if (!isset($_SESSION['visited']) || $_SESSION['visited'] > 1)
-	{
-		$results = displayFile();
-		echo $results;
 
-	}
-	else
-	{
-		updateFile();
-		$results = displayFile();
-	}
 
 	function displayFile() 
 	{
@@ -277,6 +267,17 @@
 
 	<body>
 		<?php
+			if (!isset($_SESSION['visited']) || $_SESSION['visited'] > 1)
+			{
+				$results = displayFile();
+			echo $results;
+
+			}
+			else
+			{
+				updateFile();
+				$results = displayFile();
+			}
 			//$foodPref = $_POST['foodPref'];
 			//$fruitPref = $_POST['fruitPref'];
 			//$vegPref = $_POST['vegPref'];
