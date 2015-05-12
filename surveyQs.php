@@ -6,12 +6,12 @@
 		$_SESSION['visited'] = 0;
 	}
 
-	$_SESSION['visited'] = $_SESSION['visited']++;
-
-	if ($_SESSION['visited'] > 1)
+	if ($_SESSION['visited'] >= 1)
 	{
 		header("location:survey.php");
 	}
+
+	$_SESSION['visited'] = $_SESSION['visited'] + 1;
 ?>
 <!DOCTYPE html>
 

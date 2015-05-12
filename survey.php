@@ -4,7 +4,7 @@
 
 	function displayFile() 
 	{
-		$file = fopen("results.txt", "r+");
+		$file = fopen("results.txt", "r");
 
 		$display = "The results of the survey! <br />\n";		
 		
@@ -101,10 +101,198 @@
 
 	function updateFile () 
 	{
-		$file = fopen("results.txt", "w+");
-		
-		if ($file === false)
+		if (file_exists("results.txt"))	
 		{
+			$file = fopen("results.txt", "r");
+			$formatedString = "Fruit,Vegetables,Meats,Dairy,Other\n";
+			
+			//read in foodPref variables
+			$formatedString = fgets($file);
+			$fruitPref = fgets($file);
+			$vegPref = fgets($file);
+			$meatPref = fgets($file);
+			$dairyPref = fgets($file);
+			$otherPref = fgets($file);
+			$frustrated = fgets($file);
+			$favFood = fgets($file);
+
+			fclose($file);
+		
+			//count fruit results
+			if (isset($_POST['fruitPref']))
+			{
+				$fruitPrefU = $_POST['fruitPref'];
+				$fruitPref = explode(",", $fruitPref);
+
+				for ($i = 0; $i < count($fruitPref); $i++)
+				{
+					$itemCount = explode("-", $fruitPref[$i]);
+					
+					for ($h = 0; $h < count($fruitPrefU); $h++)
+					{
+						
+						if ($itemCount[0] == $fruitPrefU[$h])
+						{
+							$itemCount[1]++;
+						}
+					}
+					$itemCount = implode("-", $itemCount);
+
+					$fruitPref[$i] = $itemCount;
+				}
+				$fruitPref = implode(",", $fruitPref);
+			}
+			$formatedString .= $fruitPref;
+			
+
+
+			//count vegitable results
+			
+
+			if (isset($_POST['vegPref']))
+			{
+				$vegPref = explode(",", $vegPref);
+				$vegPrefU = $_POST['vegPref'];
+			
+
+				for ($i = 0; $i < count($vegPref); $i++)
+				{
+					$itemCount = explode("-", $vegPref[$i]);
+					for ($h = 0; $h < count($vegPrefU); $h++)
+					{
+						if ($itemCount[0] === $vegPrefU[$h])
+						{
+							$itemCount[1]++;
+						}
+					}
+					$itemCount = implode("-", $itemCount);
+					$vegPref[$i] = $itemCount;
+				}
+				$vegPref = implode(",", $vegPref);
+			}
+			$formatedString .= $vegPref;
+
+
+			
+			if (isset($_POST['meatPref']))
+			{
+				$meatPrefU = $_POST['meatPref'];
+				$meatPref = explode(",", $meatPref);				
+			
+
+				for ($i = 0; $i < count($meatPref); $i++)
+				{
+					$itemCount = explode("-", $meatPref[$i]);
+					for ($h = 0; $h < count($meatPrefU); $h++)
+					{
+						if ($itemCount[0] === $meatPrefU[$h])
+						{
+							$itemCount[1]++;
+						}
+					}
+					$itemCount = implode("-", $itemCount);
+					$meatPref[$i] = $itemCount;
+				}
+				$meatPref = implode(",", $meatPref);				
+			}
+			$formatedString .= $meatPref;
+
+			//count dairy foods
+			
+			if(isset($_POST['dairyPref']))
+			{
+				$dairyPrefU = $_POST['dairyPref'];
+				$dairyPref = explode(",", $dairyPref);				
+			
+
+				for ($i = 0; $i < count($dairyPref); $i++)
+				{
+					$itemCount = explode("-", $dairyPref[$i]);
+					for ($h = 0; $h < count($dairyPrefU); $h++)
+					{
+						if ($itemCount[0] === $dairyPrefU[$h])
+						{
+							$itemCount[1]++;
+						}
+					}
+					$itemCount = implode("-", $itemCount);
+					$dairyPref[$i] = $itemCount;
+				}
+				$dairyPref = implode(",", $dairyPref);
+				
+			}
+			$formatedString .= $dairyPref;
+
+
+			
+			if (isset($_POST['otherPref']))
+			{
+				$otherPrefU = $_POST['otherPref'];
+				$otherPref = explode(",", $otherPref);
+			
+
+				for ($i = 0; $i < count($meatPref); $i++)
+				{
+					$itemCount = explode("-", $otherPref[$i]);
+					for ($h = 0; $h < count($otherPrefU); $h++)
+					{
+						if ($itemCount[0] === $otherPrefU[$h])
+						{
+							$itemCount[1]++;
+						}
+					}
+					$itemCount = implode("-", $itemCount);
+					$otherPref[$i] = $itemCount;
+				}
+				$otherPref = implode(",", $otherPref);	
+			}
+			$formatedString .= $otherPref;
+
+			
+			
+			if (isset($_POST['frustrating']))
+			{
+				$frustratedU = $_POST['frustrating'];
+			
+
+				$frustrated = explode("," , $frustrated);
+				$one = 1;
+				$zero = 0;
+				if ($frustratedU === "true")
+				{
+					$itemCount1 = explode("-", $frustrated[$zero]);
+					$itemCount1[$one]++;
+					$itemCount1 = implode("-", $itemCount1);
+					$frustrated[$zero] = $itemCount1;
+				}
+				else
+				{
+					$itemCount2 = explode("-", $frustrated[$one]);
+					$itemCount2[$one]++;
+					$itemCount2 = implode("-", $itemCount2);
+					$frustrated[$one] = $itemCount2;
+				}
+				$frustrated = implode(",", $frustrated);
+			}
+			$formatedString .= $frustrated;
+			
+
+			
+			if (isset($_POST['favFood']))
+			{
+				$favFoodU = $_POST['favFood'];
+			
+				$favFood .= $favFoodU;	
+			}
+			$formatedString .= $favFood;
+			
+			$file = fopen("results.txt", "w+");
+			fwrite($file, $formatedString);
+			fclose($file);	
+		}
+		else 
+		{
+			$file = fopen("results.txt", "w+");
 			$formatedString = "Fruit,Vegetables,Meats,Dairy,Other\n";
 			$formatedString .= "Sapodilla-0,Safou-0,Dates-0,Grapefruit-0\n";
 			$formatedString .= "Brussel Sprouts-0,Fat Hen-0,Parsnips-0,Yams-0\n";
@@ -113,147 +301,12 @@
 			$formatedString .= "Black Licorice-0,Soy Milk-0,Water-0,Black Jack Gum-0\n";
 			$formatedString .= "Number Frustrated-0,Number Not Frustrated-0\n";
 
-			fwrite($file, $formatedString);
+			fwrite($file, $formatedString);	
+			fclose($file);		
 		}
-		else
-		{
-			$formatedString = "Fruit,Vegetables,Meats,Dairy,Other\n";
-			//read in foodPref variables
-			$foodPref = fgets($file);
-			$fruitPref = fgets($file);
+
+
 		
-			//count fruit results
-			$fruitPref = explode(",", $fruitPref);
-			$fruitPrefU = $_POST['fruitPref'];
-			for ($i = 0; $i < count($fruitPref); $i++)
-			{
-				$itemCount = explode("-", $fruitPref[$i]);
-				for ($h = 0; $h < count($fruitPrefU); $h++)
-				{
-					if ($itemCount[0] === $fruitPrefU[$h])
-					{
-						$itemCount[1]++;
-					}
-				}
-				$itemCount = implode("-", $itemCount);
-				$fruitPref[$i] = $itemCount;
-			}
-			$fruitPref = implode(",", $fruitPref);
-			$formatedString .= $fruitPref . "\n";
-
-			//count vegitable results
-			$vegPref = fgets($file);
-
-			$vegPref = explode(",", $vegPref);
-			$vegPrefU = $_POST['vegPref'];
-			for ($i = 0; $i < count($vegPref); $i++)
-			{
-				$itemCount = explode("-", $vegPref[$i]);
-				for ($h = 0; $h < count($vegPrefU); $h++)
-				{
-					if ($itemCount[0] === $vegPrefU[$h])
-					{
-						$itemCount[1]++;
-					}
-				}
-				$itemCount = implode("-", $itemCount);
-				$vegPref[$i] = $itemCount;
-			}
-			$vegPref = implode(",", $vegPref);
-			$formatedString .= $vegPref . "\n";
-
-
-			$meatPref = fgets($file);
-
-			$meatPref = explode(",", $meatPref);
-			$meatPrefU = $_POST['meatPref'];
-			for ($i = 0; $i < count($meatPref); $i++)
-			{
-				$itemCount = explode("-", $meatPref[$i]);
-				for ($h = 0; $h < count($meatPrefU); $h++)
-				{
-					if ($itemCount[0] === $meatPrefU[$h])
-					{
-						$itemCount[1]++;
-					}
-				}
-				$itemCount = implode("-", $itemCount);
-				$meatPref[$i] = $itemCount;
-			}
-			$meatPref = implode(",", $meatPref);
-			$formatedString .= $meatPref . "\n";
-
-			//count dairy foods
-			$dairyPref = fgets($file);
-
-			$dairyPref = explode(",", $dairyPref);
-			$dairyPrefU = $_POST['dairyPref'];
-			for ($i = 0; $i < count($dairyPref); $i++)
-			{
-				$itemCount = explode("-", $dairyPref[$i]);
-				for ($h = 0; $h < count($dairyPrefU); $h++)
-				{
-					if ($itemCount[0] === $dairyPrefU[$h])
-					{
-						$itemCount[1]++;
-					}
-				}
-				$itemCount = implode("-", $itemCount);
-				$dairyPref[$i] = $itemCount;
-			}
-			$dairyPref = implode(",", $dairyPref);
-			$formatedString .= $dairyPref . "\n";
-
-			$otherPref = fgets($file);
-			$otherPref = explode(",", $otherPref);
-			$otherPrefU = $_POST['otherPref'];
-			for ($i = 0; $i < count($meatPref); $i++)
-			{
-				$itemCount = explode("-", $otherPref[$i]);
-				for ($h = 0; $h < count($otherPrefU); $h++)
-				{
-					if ($itemCount[0] === $otherPrefU[$h])
-					{
-						$itemCount[1]++;
-					}
-				}
-				$itemCount = implode("-", $itemCount);
-				$otherPref[$i] = $itemCount;
-			}
-			$otherPref = implode(",", $otherPref);
-			$formatedString .= $otherPref . "\n";
-			
-			$frustrated = fgets($file);
-			$frustratedU = $_POST['frustrating'];
-			$frustrated = explode("," , $frustrated);
-			$one = 1;
-			$zero = 0;
-			if ($frustratedU === "true")
-			{
-				$itemCount1 = explode("-", $frustrated[$zero]);
-				$itemCount1[$one]++;
-				$itemCount1 = implode("-", $itemCount1);
-				$frustrated[$zero] = $itemCount1;
-			}
-			else
-			{
-				$itemCount2 = explode("-", $frustrated[$one]);
-				$itemCount2[$one]++;
-				$itemCount2 = implode("-", $itemCount2);
-				$frustrated[$one] = $itemCount2;
-			}
-			$frustrated = implode(",", $frustrated);
-			$formatedString .= $frustrated . "\n";
-
-			$favFood = fgets($file);
-			$favFoodU = $_POST['favFood'];
-			$favFood .= $favFoodU;
-			$formatedString .= $favFood . "\n";
-
-			fwrite($file, $formatedString);
-
-		}
-		fclose($file);
 
 	}
 ?>
@@ -270,22 +323,18 @@
 			if (!isset($_SESSION['visited']) || $_SESSION['visited'] > 1)
 			{
 				$results = displayFile();
-			echo $results;
-
 			}
 			else
 			{
+				if (!file_exists("results.txt"))
+				{
+					updateFile();
+				}
 				updateFile();
 				$results = displayFile();
+				echo $results;
 			}
-			//$foodPref = $_POST['foodPref'];
-			//$fruitPref = $_POST['fruitPref'];
-			//$vegPref = $_POST['vegPref'];
-			//$meatPref = $_POST['meatPref'];
-			//$dairyPref = $_POST['dairyPref'];
-			//$otherPref = $_POST['otherPref'];
-			//$favFood = $_POST['favFood'];
-			//$frustrated = $_POST['frustrating'];
+
 		?>
 	</body>
 </html>
