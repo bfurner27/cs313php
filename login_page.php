@@ -1,0 +1,132 @@
+<?php
+	session_start();
+
+
+	if (isset($_POST['logout'])) 
+	{
+		session_unset();
+		session_destroy();
+	}
+	else if (isset($_SESSION['username']) && isset($_SESSION['password'])) 
+	{
+		//create a new database object	
+		$dbHost = getenv('OPENSHIFT_MYSQL_DB_HOST');
+		$dbPort = getenv('OPENSHIFT_MYSQL_DB_PORT');
+		$dbUser = getenv('OPENSHIFT_MYSQL_DB_USERNAME');
+		$dbPassword = getenv('OPENSHIFT_MYSQL_DB_PASSWORD');
+		$dbName = "reading_groups_app";
+
+		$db = new PDO("mysql:host=$dbHost:$dbPort;dbname=$dbName", $dbUser, $dbPassword);
+
+		//sanitize the query to increase security.
+		$queryString = "SELECT username, password, is_host FROM users WHERE username = :username AND password = :password";
+		$statement = $db->prepare($queryString);
+		$statement->bindValue(':username', $_SESSION['username']);
+		$statement->bindValue(':password', $_SESSION['password']);
+		$statement->execute();
+
+		$results = $statement->fetchAll(); 
+
+		$isValidUserAndPass = false;
+		if (strcasecmp($results[0][0], $_SESSION['username']) === 0) {
+			if (strcasecmp($results[0][1], $_SESSION['password']) === 0) {
+				$_SESSION['username'] = $_SESSION['username'];
+				$_SESSION['password'] = $_SESSION['password'];
+				$_SESSION['isHost'] = $results[0][2];
+				header("location:user_home_page.php");
+
+			}
+			else 
+			{
+				executeScript();
+			}
+		}
+		else {
+			executeScript();
+		}
+	} 
+	else if (isset($_POST['username']) && isset($_POST['password'])) 
+	{
+		$dbHost = getenv('OPENSHIFT_MYSQL_DB_HOST');
+		$dbPort = getenv('OPENSHIFT_MYSQL_DB_PORT');
+		$dbUser = getenv('OPENSHIFT_MYSQL_DB_USERNAME');
+		$dbPassword = getenv('OPENSHIFT_MYSQL_DB_PASSWORD');
+		$dbName = "reading_groups_app";
+		$db = new PDO("mysql:host=$dbHost:$dbPort;dbname=$dbName", $dbUser, $dbPassword);
+
+		//sanitize the input to make sure there is no html.
+		$username = $_POST['username'];
+		$username = filter_var($username, FILTER_SANITIZE_STRING);
+		$password = $_POST['password'];
+		$password = filter_var($password, FILTER_SANITIZE_STRING);
+
+		try {
+			//sanitize the query to increase security.
+			$query = 'SELECT username, password, is_host FROM users WHERE username = :username AND password = :password';
+			$statement = $db->prepare($query);
+			$statement->bindValue(':username', $username);
+			$statement->bindValue(':password', $password);
+			$statement->execute();
+
+			$results = $statement->fetchAll();
+
+			//check the results to make sure the person is who they say they are
+			$isValidUserAndPass = false;
+			if (count($results[0]) > 1) {
+				if (strcasecmp($results[0][0], $_POST['username']) === 0) {
+					if (strcasecmp($results[0][1], $_POST['password']) === 0) {
+						$_SESSION['username'] = $username;
+						$_SESSION['password'] = $password;
+						$_SESSION['isHost'] = $results[0][2];
+						header("location:user_home_page.php");
+						$isValidUserAndPass = true;
+
+					} else {
+						executeScript();
+					}
+				} else {
+					executeScript();
+				}
+			} else {
+				executeScript();
+			}
+
+		}  //checks if the PDOEXCEPTION failed
+		catch (PDOEXCEPTION $ex) 
+		{
+			echo "This did not work, sorry!";
+		}
+
+
+
+	}
+	
+?>
+<!DOCTYPE html>
+
+
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Login Page</title>
+		<link rel="stylesheet" type="text/css" href="reading_group.css" />
+		<script src="http://code.jquery.com/jquery-1.11.3.min.js" > </script>
+		<script src="reading_group.js" ></script>
+	</head>
+
+	<body >
+		<form action="login_page.php" method="post" onsubmit = "return submitLogin()" > 
+			<div id='errorMessage' hidden="hidden" >The username or password is incorrect</div> 
+			<?php 
+				function executeScript() {
+					echo "<div id='errorMessage' onmouseover='showErrorLogin()'>The username or password is incorrect</div>";
+				}  
+			?>
+			Username <input type="text" name="username" id="userName" /> <br />
+			Password <input type="password" name="password" id="password" /> <br />
+			<button type="submit">Log in</button>
+
+		</form>
+	</body>
+
+</html>
