@@ -1,22 +1,18 @@
 <?php
 	session_start();
 
-
 	if (isset($_POST['logout'])) 
 	{
 		session_unset();
 		session_destroy();
+		header("location:homePage.php");
 	}
 	else if (isset($_SESSION['username']) && isset($_SESSION['password'])) 
 	{
-		//create a new database object	
-		$dbHost = getenv('OPENSHIFT_MYSQL_DB_HOST');
-		$dbPort = getenv('OPENSHIFT_MYSQL_DB_PORT');
-		$dbUser = getenv('OPENSHIFT_MYSQL_DB_USERNAME');
-		$dbPassword = getenv('OPENSHIFT_MYSQL_DB_PASSWORD');
-		$dbName = "reading_groups_app";
 
-		$db = new PDO("mysql:host=$dbHost:$dbPort;dbname=$dbName", $dbUser, $dbPassword);
+		require("requestDb.php");
+
+		$db = requestDb();
 
 		//sanitize the query to increase security.
 		$queryString = "SELECT username, password, is_host FROM users WHERE username = :username AND password = :password";
@@ -26,6 +22,7 @@
 		$statement->execute();
 
 		$results = $statement->fetchAll(); 
+
 
 		$isValidUserAndPass = false;
 		if (strcasecmp($results[0][0], $_SESSION['username']) === 0) {
@@ -47,58 +44,43 @@
 	} 
 	else if (isset($_POST['username']) && isset($_POST['password'])) 
 	{
-		$dbHost = getenv('OPENSHIFT_MYSQL_DB_HOST');
-		$dbPort = getenv('OPENSHIFT_MYSQL_DB_PORT');
-		$dbUser = getenv('OPENSHIFT_MYSQL_DB_USERNAME');
-		$dbPassword = getenv('OPENSHIFT_MYSQL_DB_PASSWORD');
-		$dbName = "reading_groups_app";
-		$db = new PDO("mysql:host=$dbHost:$dbPort;dbname=$dbName", $dbUser, $dbPassword);
 
-		//sanitize the input to make sure there is no html.
+		require('requestDb.php');
+		$db = requestDb(); 
+			//sanitize the input to make sure there is no html.	
 		$username = $_POST['username'];
 		$username = filter_var($username, FILTER_SANITIZE_STRING);
 		$password = $_POST['password'];
 		$password = filter_var($password, FILTER_SANITIZE_STRING);
+		
+		//sanitize the query to increase security.
+		$query = 'SELECT username, password, is_host FROM users WHERE username = :username AND password = :password';
+		$statement = $db->prepare($query);
+		$statement->bindValue(':username', $username);
+		$statement->bindValue(':password', $password);
+		$statement->execute();
 
-		try {
-			//sanitize the query to increase security.
-			$query = 'SELECT username, password, is_host FROM users WHERE username = :username AND password = :password';
-			$statement = $db->prepare($query);
-			$statement->bindValue(':username', $username);
-			$statement->bindValue(':password', $password);
-			$statement->execute();
+		$results = $statement->fetchAll();
 
-			$results = $statement->fetchAll();
-
-			//check the results to make sure the person is who they say they are
-			$isValidUserAndPass = false;
-			if (count($results[0]) > 1) {
-				if (strcasecmp($results[0][0], $_POST['username']) === 0) {
-					if (strcasecmp($results[0][1], $_POST['password']) === 0) {
-						$_SESSION['username'] = $username;
-						$_SESSION['password'] = $password;
-						$_SESSION['isHost'] = $results[0][2];
-						header("location:user_home_page.php");
-						$isValidUserAndPass = true;
-
-					} else {
-						executeScript();
-					}
+		//check the results to make sure the person is who they say they are
+		$isValidUserAndPass = false;
+		if (count($results[0]) > 1) {
+			if (strcasecmp($results[0][0], $_POST['username']) === 0) {
+				if (strcasecmp($results[0][1], $_POST['password']) === 0) {
+					$_SESSION['username'] = $username;
+					$_SESSION['password'] = $password;
+					$_SESSION['isHost'] = $results[0][2];
+					header("location:user_home_page.php");
+					$isValidUserAndPass = true;
 				} else {
 					executeScript();
 				}
 			} else {
 				executeScript();
 			}
-
-		}  //checks if the PDOEXCEPTION failed
-		catch (PDOEXCEPTION $ex) 
-		{
-			echo "This did not work, sorry!";
+		} else {
+			executeScript();
 		}
-
-
-
 	}
 	
 ?>

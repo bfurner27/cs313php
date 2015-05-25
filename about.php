@@ -4,10 +4,10 @@
 <html lang="en" >
 	<head>
 		<meta charset="utf-8" />
-		<title>Reading Group Center's Home Page</title>
 		<link rel="stylesheet" type="text/css" href="reading_group.css" />
 		<script src="http://code.jquery.com/jquery-1.11.3.min.js" > </script>
 		<script src="reading_group.js"></script>
+		<title>About Page</title>
 		<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
@@ -15,15 +15,15 @@
 	</head>
 
 	<body class="container-fluid">
-		<h1 class='page-header'> Welcome to the Reading Group Center</h1>
+		<h1 class='page-header'> About</h1>
 		<nav class="navbar navbar-default">
 			<div class="container-fluid">
 				<div class="navbar-header" >
-					<a href="#" class="navbar-brand" >Reading Group Center</a>
+					<a href="homePage.php" class="navbar-brand" >Reading Group Center</a>
 				</div>
 				<div>
 					<ul class="nav navbar-nav">
-					<li class="active"><a href="#">Home</a></li>
+					<li><a href="homePage.php">Home</a></li>
 					<li><a href="reading_groups_page.php">Groups</a></li>
 					<?php 
 						if (isset($_SESSION['username']))
@@ -31,7 +31,7 @@
 							echo "<li><a href='user_home_page.php'>User Page</a></li>";
 						}
 					?>
-					<li><a href="about.php">About</a></li>
+					<li class="active"><a href="#">About</a></li>
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
 					<?php 
