@@ -110,12 +110,16 @@
 		{
 		 	//output the book information
 		 	
-		 	echo '<h2>' . $book['title'] . '</h2>';
-		 	echo '<table>';
-		 	echo "<tr><td><img src='" . $book['picture_link'] . "' alt='" . $book['picture_link'] . " width='128' height='128' /></td>";
-		 	echo '<td>' . $book['description'] . '</td></tr>';
-		 	echo '<tr><td>Author: ' . $book['author'] . '<br />Publisher: ' . $book['publisher'] . '</td>';
-		 	echo '</table>';
+		 	echo "<div class='displayBook'>";
+		 	echo "<h2>" . $book['title'] . '</h2>';
+		 	echo "<div class='formatInfoText'><b>Author:</b> " . $book['author'] . '<br /><b>Publisher:</b> ' . $book['publisher']
+		 	. '<br /></div>';
+		 	echo "<div class='displayBookPicture'><img class='formatPicture' src='" . $book['picture_link'] . "' alt='" . $book['picture_link']
+		 	 . "' /></div>";
+		 	echo "<div class=''></div>";
+			echo "<div class='displayBookInfo'><div class='displayDescriptionTitle'><b>Description</b></div>" . $book['description'] . '</div>';
+
+		 	echo '</div>';
 
 		 	$query = "SELECT b.title,c.title,c.c_date,c.comment,u.username FROM books AS b
 			JOIN comments AS c ON b.b_id = c.book_id
@@ -136,7 +140,7 @@
 				echo "<div class='panel panel-info'>";
 				echo "<div class='panel-heading'>" . $comment['username'] ."</div>";
 				echo "<div class='panel-body'>";
-				if ($comment['title'] !== "") 
+				if ($comment['title'] != "") 
 				{
 					echo $comment['title'] . "... <br />";
 				}
