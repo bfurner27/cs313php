@@ -30,6 +30,7 @@
 				$_SESSION['username'] = $_SESSION['username'];
 				$_SESSION['password'] = $_SESSION['password'];
 				$_SESSION['isHost'] = $results[0][2];
+				$_SESSION['user_id'] = $results[0][3];
 				header("location:user_home_page.php");
 
 			}
@@ -54,7 +55,7 @@
 		$password = filter_var($password, FILTER_SANITIZE_STRING);
 		
 		//sanitize the query to increase security.
-		$query = 'SELECT username, password, is_host FROM users WHERE username = :username AND password = :password';
+		$query = 'SELECT username, password, is_host, u_id FROM users WHERE username = :username AND password = :password';
 		$statement = $db->prepare($query);
 		$statement->bindValue(':username', $username);
 		$statement->bindValue(':password', $password);
@@ -70,6 +71,7 @@
 					$_SESSION['username'] = $username;
 					$_SESSION['password'] = $password;
 					$_SESSION['isHost'] = $results[0][2];
+					$_SESSION['user_id'] = $results[0][3];
 					header("location:user_home_page.php");
 					$isValidUserAndPass = true;
 				} else {

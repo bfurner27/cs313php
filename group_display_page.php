@@ -79,7 +79,7 @@
 	$results = $statement->fetchAll();
 	displayHeaderInfo($results);
 
-	$query = "SELECT g.name,b.title,b.author,b.publisher,b.description,b.picture_link FROM groups AS g
+	$query = "SELECT g.name,b.title,b.author,b.publisher,b.description,b.picture_link,b.b_id,g.g_id FROM groups AS g
 	JOIN books AS b ON g.g_id = b.group_id
 	WHERE g.name = :groupName";
 
@@ -99,7 +99,7 @@
 	function displayHeaderInfo($results) 
 	{
 		
-		echo "<h3>Your group administrator is: " . $results[0][0] . " <br />Contact info: " . $results[0][1] . "</h3>";
+		echo "<h3 id='groupAdministrator'>Your group administrator is: " . $results[0][0] . " <br />Contact info: " . $results[0][1] . "</h3>";
 	}
 ?>
 
@@ -125,7 +125,7 @@
 			JOIN comments AS c ON b.b_id = c.book_id
 			JOIN users AS u ON c.user_id = u.u_id
 			WHERE b.title = :bookTitle
-			ORDER BY c.c_date DESC";
+			ORDER BY c.c_timestamp";
 
 			$requestComments = $db->prepare($query);
 			$requestComments->bindValue(':bookTitle', $book['title']);
@@ -134,38 +134,77 @@
 			$comments = $requestComments->fetchAll();
 
 			//output the comments for the book
-			echo "<div class='container-fluid'><div class='panel-group'>";
+			echo "<div class='container-fluid'><div class='panel-group' id='addPanel'>";
 			foreach ($comments as $comment)
-			{
-				echo "<div class='panel panel-info'>";
-				echo "<div class='panel-heading'>" . $comment['username'] ."</div>";
-				echo "<div class='panel-body'>";
+			{	//format each individual comment so it will display in the correct location
+				echo "<div class='panel panel-info' >";
+				echo "<div class='panel-heading displayCommentHeading'>" . $comment['username'] ."</div>";
+				echo "<div class='panel-body displayComment'>";
 				if ($comment['title'] != "") 
 				{
 					echo $comment['title'] . "... <br />";
 				}
 				echo $comment['comment'] . "</div>";
-				//echo "<tr><th>" . $comment['title'] . $comment['username'] . '</th></tr>';
-				//echo '<tr><td>' . $comment['comment'] . '</td></tr>';
 				echo "</div>";
 			}
 			
-			$bookTitle = $book['title'];
-			$bookTitle = explode(' ', $bookTitle);
-			$bookTitle = implode('', $bookTitle);
-			//echo "<form action='group_display_page.php' method='POST' id='form$bookTitle'>";
-			echo "<div class='panel panel-info'>";
-			echo "<div class='panel-heading'>add comment ...</div><div class='panel-body'><textarea name='comment' row='1' class='postCommentBox'></textarea>"
-			. "<br /><button id='button$bookTitle' type='submit' class='postButton'>Post</button></div>";
-			echo "</div>";
-			//. "</form>";
-			echo '</div></div>';
+			if (isset($_SESSION['username']))
+			{
+				$bookTitle = $book['title'];
+				$bookTitle = explode(' ', $bookTitle);
+				$bookTitle = implode('', $bookTitle);
 
-			//put a request to update the database here and display the results
-			echo "<script>";
-			echo "$('#button$bookTitle').on('click', function () {";
-			echo "alert('Sorry: this portion of the website is not working yet!'); });";
-			echo "</script>";
+				//this is to enable us to input additional items
+				echo "<div id='insertItem$bookTitle' hidden='hidden'></div>";
+
+
+				//this is the new comment box so if someone wants to add additional comments
+				echo "<div class='panel panel-info id='newComment'>";
+				echo "<div class='panel-heading displayCommentHeading'>add comment ...</div><div class='panel-body'>"
+				. "<input type='text' class='postTitleBox' id='titleId$bookTitle' maxlength='256' placeholder='Title ...'/>"
+				. "<textarea name='comment' id='id$bookTitle' row='1' class='postCommentBox' placeholder='Comment ...'></textarea>"
+				. "<br /><button id='button$bookTitle' type='submit' class='postButton'>Post</button></div>";
+				echo "</div>";
+
+
+				//display the jquery that will send the ajax request to insert information into the database
+				$groupName = $_GET['groupName'];
+				$userId = $_SESSION['user_id'];
+				$bookId = $book['b_id'];
+				$groupId = $book['g_id'];
+				$username = $_SESSION['username'];
+
+				//put a request to update the database here and display the results
+				echo "\n<script>\n";
+				echo "$('#button$bookTitle').on('click', function () {\n";
+				echo "if ($('#id$bookTitle').val() == '') {\n";
+			
+				//in the case the comment box is empty these are the error message conditions
+				echo "$('#id$bookTitle').attr('placeholder', 'ERROR: You cannot post an empty comment');\n";
+				echo "$('#id$bookTitle').css({'border-color':'red', 'border-width':'2px', 'border-style':'solid'});\n";
+				echo "} else {\n"; //end of if statement
+			
+				//reformat the string to the default look
+				echo "$('#id$bookTitle').attr('placeholder', 'Comment ...');\n";
+				echo "$('#id$bookTitle').css({'border-color':'', 'border-width':'', 'border-style':''});\n";
+
+				//put everything in an array so the query string will be built correctly
+				echo "var params = {\n group : '$groupName',\n groupId : '$groupId', username : '$username',\n"
+				. "userId : '$userId',\n bookId : '$bookId' };\n";
+				echo "params['comment'] = $('#id$bookTitle').val(); params['title'] = $('#titleId$bookTitle').val();";
+			
+				//send the ajax request
+				//found some of this from jquery reference on post function
+				echo "\tvar posting = $.post('add_comment.php', $.param(params))\n";
+				echo "posting.done(function (data) { \n"
+				. "\t$(data).insertBefore('#insertItem$bookTitle');\n"
+				. "});\n";
+				echo "$('#id$bookTitle').val('');\n";
+				echo "$('#titleId$bookTitle').val('')";
+				echo "}\n"; //end of else for if statement
+				echo "});\n";
+				echo "</script>\n";
+			}
 		} //this is the end of the loop for the books
 	} //This is the display portion for the books and comments
 ?> 
