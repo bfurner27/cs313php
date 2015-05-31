@@ -2,6 +2,35 @@
 	if (isset($_SESSION['username'])) 
 	{
 		header("location:user_home_page.php");
+	} 
+	else if (isset($_POST['username']) && isset($_POST['password']))
+	{
+		$username = htmlspecialchars($_POST['username']);
+		$password = htmlspecialchars($_POST['password']);
+		$name = "";
+		if (isset($_POST['name'])) 
+		{
+			$name = htmlspecialchars($_POST['name']);
+		}
+
+		require('requestDb.php');
+		$db = requestDb();
+
+		$query = "INSERT INTO users(name,username,password)
+				VALUES (:name,:username,:password)";
+		$insertNewUser = $db->prepare($query);
+		$insertNewUser->bindParam(':name', $name);
+		$insertNewUser->bindParam(':username', $username);
+		$insertNewUser->bindParam(':password', $password);
+
+		$insertNewUser->execute();
+
+		$_SESSION['username'] = $username;
+		$_SESSION['password'] = $password;
+		$_SESSION['is_host'] = 0;
+		$_SESSION['user_id'] = $db->lastInsertId();
+
+		header('location:user_home_page.php');
 	}
  ?>
 <!DOCTYPE html>
@@ -17,16 +46,16 @@
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
 	</head>
 
-	<body>
-		<h1>Welcome New User</h1>
+	<body class='newGroupPageFormat'>
+		<h1 class='center'>Welcome New User</h1>
 		<form action='create_new_account.php' method="post" id="newUserForm" onsubmit="return verifyNewAccountInfo()"> 
-			Please fill out the following information <br />
-			Name: <input type='text' name='name' id='inputName' /> <br />
-			Username: <input type='text' name='username' id='inputUsername' /> <br />
+			<label>Please fill out the following information</label> <br />
+			<label for='inputName'>Name:</label> <input class='form-control' type='text' name='name' id='inputName' /> <br />
+			<label for='inputUsername'>Username:</label> <input class='form-control' type='text' name='username' id='inputUsername' /> <br />
 			<div hidden='hidden' id='passwordError' >Passwords did not match</div>
-			Password: <input type='password' name='password' id='password' /> <br />
-			Password Confirmation: <input type='password' id='passwordCheck'> <br />
-			<button type="submit" id="submitForm" >Submit</button>
+			<label>Password:</label> <input class='form-control' type='password' name='password' id='password' /> <br />
+			<label>Password Confirmation:</label> <input class='form-control' type='password' id='passwordCheck' > <br />
+			<button type="submit" id="submitForm" >Submit</button> <br />
 		</form>
 	</body>
 </html>

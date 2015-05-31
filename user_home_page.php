@@ -21,12 +21,24 @@
 	$statement->execute();
 
 	$results = $statement->fetchAll();
+
+	if (empty($results)) 
+	{
+		$username = $_SESSION['username'];
+		$query = "SELECT name FROM users
+		          WHERE username='$username'";
+
+		$username = $db->prepare($query);
+		$username->execute();
+
+		$username = $username->fetchAll();
+	}
 ?>
 
 <html>
 	<head lang="en">
 		<meta charset="utf-8" />
-		<title><?php echo $results[0][0] . "'s " ?> Home Page</title>
+		<title><?php if(empty($results)) { echo $username[0][0] . "'s "; } else { echo $results[0][0] . "'s "; }?> Home Page</title>
 		<link rel="stylesheet" type="text/css" href="reading_group.css" />
 		<script src="http://code.jquery.com/jquery-1.11.3.min.js" > </script>
 		<script src="reading_group.js" ></script>
@@ -40,8 +52,9 @@
 	<body class="container-fluid">
 		<h1 id="title" class="page-header">  
 		<?php 
-			echo $results[0][0] . "'s Home Page";
+			if(empty($results)) { echo $username[0][0] . "'s "; } else { echo $results[0][0] . "'s "; }
 		?> 
+		Home Page
 		</h1>
 
 		<nav class="navbar navbar-default">
@@ -58,7 +71,7 @@
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
 					<?php
-						if($_SESSION['isHost'] == 0) 
+						if($_SESSION['is_host'] == 0) 
 						{
 							echo "<li><a href='add_host_extension.php' ><span class='glyphicon glyphicon-user'></span> Become Group Host</a></li>";
 						}

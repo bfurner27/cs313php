@@ -66,3 +66,29 @@
 .clearFloatLeft {
 	clear: left;
 }
+
+.indentOneTab {
+	margin-left: 20px;
+}
+
+.indentTwoTabs {
+	margin-left: 40px;
+}
+
+.makeBold {
+	font-weight: bold;
+}
+
+.groupNameManage {
+	margin-top: 40px;
+}
+
+.newGroupPageFormat {
+	width: 60%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.center {
+	text-align: center;
+}

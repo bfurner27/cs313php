@@ -20,40 +20,41 @@ function submitLogin() {
 
 
 function verifyNewAccountInfo() {
+	var isValid = true;
 	if ($("#inputName").val() == "")
 	{
 		$("#inputName").attr('placeholder', "ex: Jared Green");
-		return false;
+		isValid = false;
 	}
 	
-	if ($("#inputUsername").val == "") 
+	if ($("#inputUsername").val() == "") 
 	{
 		$("#inputUsername").attr('placeholder', "ex: goingGreen83");
-		return false;
+		isValid = false;
 	}
 	
-	if ($("#password").val == "") 
+	if ($("#password").val() == "") 
 	{
 		$("#password").attr('placeholder', "ex: *************");
-		return false;
+		isValid = false;
 	} 
 	
-	if ($("#passwordCheck").val == "") 
+	if ($("#passwordCheck").val ()== "") 
 	{
 		$("#passwordCheck").attr('placeholder', "ex: *************");
-		return false;
+		isValid = false;
 	} 
 	
-	if (newUserConfirmPassword()) 
+	if (!newUserConfirmPassword())
 	{
-		return false;
+		isValid = false;
 	}
 
-	return true;
+	return isValid;
 }
 
 function newUserConfirmPassword() {
-	if ($("#password").val() !== $("#passwordCheck").val()) {
+	if ($("#password").val() !== $("#passwordCheck").val() || $("#password") === "") {
 		$("#passwordError").show();
 		$('#password').attr('placeholder', 'ex: *************');
 		$('#passwordCheck').attr('placeholder', 'ex: ************');
