@@ -27,7 +27,7 @@
 
 		$_SESSION['username'] = $username;
 		$_SESSION['password'] = $password;
-		$_SESSION['is_host'] = 0;
+		$_SESSION['isHost'] = 0;
 		$_SESSION['user_id'] = $db->lastInsertId();
 
 		header('location:user_home_page.php');

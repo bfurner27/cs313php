@@ -71,7 +71,7 @@
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
 					<?php
-						if($_SESSION['is_host'] == 0) 
+						if($_SESSION['isHost'] == 0) 
 						{
 							echo "<li><a href='add_host_extension.php' ><span class='glyphicon glyphicon-user'></span> Become Group Host</a></li>";
 						}
