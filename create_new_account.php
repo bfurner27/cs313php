@@ -5,8 +5,10 @@
 	} 
 	else if (isset($_POST['username']) && isset($_POST['password']))
 	{
+		require('password.php');
 		$username = htmlspecialchars($_POST['username']);
 		$password = htmlspecialchars($_POST['password']);
+		$password = password_hash($password, PASSWORD_DEFAULT);
 		$name = "";
 		if (isset($_POST['name'])) 
 		{

@@ -1,6 +1,8 @@
 <?php
 	session_start();
 
+	require('password.php');
+
 	if (isset($_POST['logout'])) 
 	{
 		session_unset();
@@ -15,10 +17,9 @@
 		$db = requestDb();
 
 		//sanitize the query to increase security.
-		$queryString = "SELECT username, password, is_host FROM users WHERE username = :username AND password = :password";
+		$queryString = "SELECT username, password, is_host FROM users WHERE username = :username";
 		$statement = $db->prepare($queryString);
 		$statement->bindValue(':username', $_SESSION['username']);
-		$statement->bindValue(':password', $_SESSION['password']);
 		$statement->execute();
 
 		$results = $statement->fetchAll(); 
@@ -26,7 +27,7 @@
 
 		$isValidUserAndPass = false;
 		if (strcasecmp($results[0][0], $_SESSION['username']) === 0) {
-			if (strcasecmp($results[0][1], $_SESSION['password']) === 0) {
+			if (password_verify($_SESSION['password'], $results[0][1])) {
 				$_SESSION['username'] = $_SESSION['username'];
 				$_SESSION['password'] = $_SESSION['password'];
 				$_SESSION['isHost'] = $results[0][2];
@@ -53,12 +54,12 @@
 		$username = filter_var($username, FILTER_SANITIZE_STRING);
 		$password = $_POST['password'];
 		$password = filter_var($password, FILTER_SANITIZE_STRING);
+
 		
 		//sanitize the query to increase security.
-		$query = 'SELECT username, password, is_host, u_id FROM users WHERE username = :username AND password = :password';
+		$query = 'SELECT username, password, is_host, u_id FROM users WHERE username = :username';
 		$statement = $db->prepare($query);
 		$statement->bindValue(':username', $username);
-		$statement->bindValue(':password', $password);
 		$statement->execute();
 
 		$results = $statement->fetchAll();
@@ -66,8 +67,8 @@
 		//check the results to make sure the person is who they say they are
 		$isValidUserAndPass = false;
 		if (count($results[0]) > 1) {
-			if (strcasecmp($results[0][0], $_POST['username']) === 0) {
-				if (strcasecmp($results[0][1], $_POST['password']) === 0) {
+			if (strcasecmp($results[0][0], $username) === 0) {
+				if (password_verify($password, $results[0][1])) {
 					$_SESSION['username'] = $username;
 					$_SESSION['password'] = $password;
 					$_SESSION['isHost'] = $results[0][2];

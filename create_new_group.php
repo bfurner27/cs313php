@@ -55,21 +55,12 @@
 			$description = htmlspecialchars($_POST['description']);
 		}
 
-		$query = "INSERT INTO books(title,author,publisher,description,picture_link,group_id)
-				VALUES (:title,:author,:publisher,:description,:picture_link,:newGroupId)";
+		require('add_book.php');
+		insertBook($db, $bookTitle, $author, $publisher, $description, $pictureLink, $newGroupId);
 
-		$insertBook = $db->prepare($query);
-		$insertBook->bindParam(':title', $bookTitle);
-		$insertBook->bindParam(':author', $author);
-		$insertBook->bindParam(':publisher', $publisher);
-		$insertBook->bindParam(':description', $description);
-		$insertBook->bindParam(':picture_link', $pictureLink);
-		$insertBook->bindParam(':newGroupId', $newGroupId);
-
-		$insertBook->execute();
 
 		$query = "INSERT INTO users_groups(user_id,group_id)
-				VALUES($userId,$newGroupId)";
+			VALUES($userId,$newGroupId)";
 
 		$makePartOfGroup = $db->prepare($query);
 		$makePartOfGroup->execute();

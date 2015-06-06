@@ -78,6 +78,7 @@
 		<div id="groups">
 			<?php 
 				//display the group name and have the link set up
+			echo "<div class='bookNameManage'><a href='create_new_group.php'><span class='glyphicon glyphicon-plus'></span> Create Group</a></div>";
 				foreach ($results as $row) {
 					$groupName = $row[0];
 					$groupName = explode(" ", $groupName);
@@ -86,6 +87,12 @@
 					$regEx = "/[^\w]+/";
 					$groupName = preg_replace($regEx, "", $groupName);
 					echo "<div class='groupNameManage'>" . $row[0] . "</div>";
+					
+					//put the form that will submit to the create new book page and will submit the group name
+					echo "<div class='indentOneTab' id='id2$groupName'><a href='#'><span class='glyphicon glyphicon-plus'></span> Add Book</a></div>";
+					echo "<form id='form2$groupName' action='create_new_book.php' method='POST' >";
+					echo "<input type='hidden' name='nameOfGroup' value='" . $row[0] . "' hidden='hidden'/>";
+					echo "</form>";
 
 					$query = "SELECT b.title FROM books as b
 					JOIN groups AS g ON b.group_id = g.g_id
@@ -106,7 +113,8 @@
 						$regEx = "/[^\w]+/";
 						$idBookName = preg_replace($regEx, "", $idBookName);
 
-						echo "<div class='indentOneTab makeBold'>" . $bookName[0] . "</div>";
+						echo "<div class='indentOneTab makeBold bookNameManage'>" . $bookName[0] . "</div>";
+
 						
 						$query = "SELECT c.c_id,c.c_date,c.title,c.comment,u.username FROM comments AS c
 						JOIN users AS u ON u.u_id = c.user_id
@@ -155,13 +163,22 @@
 						echo "$.post('delete_comment.php', queryString);\n";
 						echo "});\n";
 						echo "</script>\n";
+
+
+						//add the jquery to submit the form when the link is clicked, which indicates a submit.
+						echo "<script>" .
+						"$('#id2$groupName').on('click', function() {
+						$('#form2$groupName').submit();
+						});" . 
+						"</script>";
 					}
+
 				}
-				echo "<div><a href='create_new_group.php'><span class='glyphicon glyphicon-plus'></span> Create Group</a></div>";
+
 			?>
 
 		<?php 
-			$groupName = "";
+			/*$groupName = "";
 			foreach ($results as $row) {
 				$groupName = $row[0];
 				$groupName = explode(" ", $groupName);
@@ -181,7 +198,7 @@
 					$('#form$groupName').submit();
 				});" . 
 				"</script>";
-			}
+			}*/
 		?>
 
 		</div>
