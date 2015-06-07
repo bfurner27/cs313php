@@ -57,7 +57,7 @@
 			<div hidden='hidden' id='passwordError' >Passwords did not match</div>
 			<label>Password:</label> <input class='form-control' type='password' name='password' id='password' /> <br />
 			<label>Password Confirmation:</label> <input class='form-control' type='password' id='passwordCheck' > <br />
-			<button type="submit" id="submitForm" >Submit</button> <br />
+			<button type="submit" id="submitForm" class='postButton'>Submit</button> <br />
 		</form>
 	</body>
 </html>

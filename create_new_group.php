@@ -95,7 +95,7 @@
 			<input type="hidden" name="MAX_FILE_SIZE" value="30000" />
 			<label for='picture'>Upload Image:</label> <input type="file" name="picture" id='picture' enctype="multipart/form-data" />
 			<label for='description'>Description:</label> <br /><textarea name="description" id="description" class='form-control' > </textarea> <br />
-			<button type="submit" id="submitButton" >Submit</button> <br />
+			<button type="submit" id="submitButton" class='postButton' >Submit</button> <br />
 		</form>	
 	</body>
 
