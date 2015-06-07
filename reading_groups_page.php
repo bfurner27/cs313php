@@ -71,7 +71,7 @@
 function requestAndDisplayGroupInfo($db) 
 {
 	//Request all the Group Names
-	$queryGroups = "SELECT name FROM groups";
+	$queryGroups = "SELECT name,g_id FROM groups";
 
 	$requestGroupNames = $db->prepare($queryGroups);
 	$requestGroupNames->execute();
@@ -103,22 +103,49 @@ function requestAndDisplayGroupInfo($db)
 		$regEx = "/[^\w]+/";
 		$groupName = preg_replace($regEx, "", $groupName);
 		
+
 		echo "<tr><td hidden='hidden'>";
-		if ($isInGroup < 1 && isset($_SESSION['username'])) 
+		if (count($isInGroup) < 1 && isset($_SESSION['username'])) 
 		{
-			echo "<a href='#' ><span class='glyphicon glyphicon-plus'></span> add</a>";
+			echo "<a href='' id='Add$groupName' ><span id='glyphA$groupName' class='glyphicon glyphicon-plus'></span></a>";
 		}
 		else if (isset($_SESSION['username'])) 
 		{
-			echo "<a href='#' ><span class='glyphicon glyphicon-remove'></span></a>";
+			echo "<a href='' id='Remove$groupName'><span id='glyphR$groupName' class='glyphicon glyphicon-remove red' ></span></a>";
 		}
-		echo "</td><td><a href='#' name='$groupName' id='id$groupName'>" . $row[0] . "</a></td></tr>";
+		echo "</td><td><a href='' name='$groupName' id='id$groupName'>" . $row[0] . "</a></td></tr>";
 		
 	}
 	echo "</table>";
 	if (isset($_SESSION['username']))
 	{
 		echo "<script> $('td').show(); </script>";
+
+		//add script for ajax request to add a group
+		$groupId = $row['g_id'];
+		echo "<script>\n";
+		echo "$('#Add$groupName').on('click', function () {\n";
+		echo "var queryString = {\n";
+		echo "command : 'add',\n";
+		echo "groupId : '$groupId'\n";
+		echo "};";
+		echo "$.post('add_remove_groups.php', $.param(queryString));\n";
+		echo "$('#glyphA$groupName').attr('class', 'glyphicon glyphicon-remove');\n";
+		echo "});\n";
+		echo "</script>\n";
+
+
+		//remove group
+		echo "<script>\n";
+		echo "$('#Remove$groupName').on('click', function () {\n";
+		echo "var queryString = {\n";
+		echo "command : 'remove', \n";
+		echo "groupId : '$groupId' \n";
+		echo "};\n";
+		echo "var posting = $.post('add_remove_groups.php', $.param(queryString));\n";
+		echo "$('#glyphR$groupName').attr('class', 'glyphicon glyphicon-plus');\n";
+		echo "});\n";
+		echo "</script>\n";
 	}
 
 	foreach ($groupNames as $row) 
