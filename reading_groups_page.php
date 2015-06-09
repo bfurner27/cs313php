@@ -113,12 +113,24 @@ function requestAndDisplayGroupInfo($db)
 		{
 			echo "<a href='' id='Remove$groupName'><span id='glyphR$groupName' class='glyphicon glyphicon-remove red' ></span></a>";
 		}
-		echo "</td><td><a href='' name='$groupName' id='id$groupName'>" . $row[0] . "</a></td></tr>";
+		echo "</td><td><a href='#' name='$groupName' id='id$groupName'>" . $row[0] . "</a></td></tr>";
 		
 	}
 	echo "</table>";
-	if (isset($_SESSION['username']))
+
+
+	foreach ($groupNames as $row) 
 	{
+		$groupName = $row[0];
+		$groupName = str_replace(" ", "", $groupName);
+		//$groupName = explode(" ", $groupName);
+		//$groupName = implode("", $groupName);
+
+		$regEx = "/[^\w]+/";
+		$groupName = preg_replace($regEx, "", $groupName);
+
+		if (isset($_SESSION['username']))
+		{
 		echo "<script> $('td').show(); </script>";
 
 		//add script for ajax request to add a group
@@ -146,16 +158,7 @@ function requestAndDisplayGroupInfo($db)
 		echo "$('#glyphR$groupName').attr('class', 'glyphicon glyphicon-plus');\n";
 		echo "});\n";
 		echo "</script>\n";
-	}
-
-	foreach ($groupNames as $row) 
-	{
-		$groupName = $row[0];
-		$groupName = explode(" ", $groupName);
-		$groupName = implode("", $groupName);
-
-		$regEx = "/[^\w]+/";
-		$groupName = preg_replace($regEx, "", $groupName);
+		}
 				
 		//output form information
 		echo "<form action='group_display_page.php' method='get' id='form$groupName'>" 
