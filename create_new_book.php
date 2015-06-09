@@ -9,12 +9,10 @@
 		{
 			$author = htmlspecialchars($_POST['author']);
 		}
-		//not working yet
-		$pictureLink = "";
-		if (isset($_POST['picture'])) 
-		{
 
-		}
+		
+		$pictureLink = "";		
+		echo "Your picture link is: "  . $pictureLink;	
 
 		$publisher = "";
 		if (isset($_POST['publisher']))
@@ -89,3 +87,14 @@
 	</body>
 
 </html>
+
+<?php
+function addFile() 
+{
+
+
+
+
+
+}
+?>
